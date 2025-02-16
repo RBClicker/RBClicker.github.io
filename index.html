@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Неоновый Кликер</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        #counter {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        #clickable-image {
+            width: 200px;
+            transition: transform 0.5s;
+        }
+        .clicked {
+            transform: rotateZ(360deg);
+        }
+        #registration-form {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        #registration-form input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 200px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        #register-button {
+            cursor: pointer;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00ff00;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="counter">0</div>
+    <img id="clickable-image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Robux_2019_Logo_gold.svg/640px-Robux_2019_Logo_gold.svg.png" alt="Кликабельная картинка" onclick="incrementCounter()">
+    
+    <button id="registration-toggle" onclick="toggleRegistration()">Регистрация</button>
+    
+    <div id="registration-form">
+        <input type="text" id="username" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
+        <button id="register-button" onclick="registerUser ()">Зарегистрироваться</button>
+        <div id="registration-message"></div>
+    </div>
+
+    <script>
+        let count = 0;
+
+        function incrementCounter() {
+            count++;
+            document.getElementById('counter').innerText = count;
+
+            const image = document.getElementById('clickable-image');
+            image.classList.add('clicked');
+
+            setTimeout(() => {
+                image.classList.remove('clicked');
+            }, 500);
+        }
+
+        function toggleRegistration() {
+            const form = document.getElementById('registration-form');
+            form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+        }
+
+        async function registerUser () {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Отправка данных на сервер
+            try {
+                const response = await fetch('https://rbclicker.github.io/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const result = await response.json();
+                document.getElementById('registration-message').innerText = result.message || 'Регистрация успешна!';
+            } catch (error) {
+                document.getElementById('registration-message').innerText = 'Ошибка регистрации!';
+                console.error('Ошибка:', error);
+            }
+        }
+    </script>
+</body>
+</html>
